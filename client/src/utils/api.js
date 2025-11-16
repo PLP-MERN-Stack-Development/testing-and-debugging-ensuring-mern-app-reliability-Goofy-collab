@@ -1,8 +1,8 @@
+// client/src/utils/api.js
 import axios from 'axios';
-import { toast } from 'react-toastify';
 
 const api = axios.create({
-  baseURL: process.env.REACT_APP_API_URL || 'http://localhost:5000/api',
+  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:5000/api',
   timeout: 10000,
 });
 
@@ -16,7 +16,7 @@ api.interceptors.request.use(
     }
 
     // Log request in development
-    if (process.env.NODE_ENV === 'development') {
+    if (import.meta.env.DEV) {
       console.log('API Request:', {
         method: config.method.toUpperCase(),
         url: config.url,
@@ -36,7 +36,7 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response) => {
     // Log response in development
-    if (process.env.NODE_ENV === 'development') {
+    if (import.meta.env.DEV) {
       console.log('API Response:', {
         url: response.config.url,
         status: response.status,
@@ -48,43 +48,32 @@ api.interceptors.response.use(
   (error) => {
     // Handle different error types
     if (error.response) {
-      // Server responded with error status
       const { status, data } = error.response;
 
       switch (status) {
         case 400:
-          toast.error(data.error || 'Bad request');
+          console.error('Bad request:', data.error);
           break;
         case 401:
-          toast.error('Please login to continue');
+          console.error('Unauthorized. Please login.');
           localStorage.removeItem('token');
           window.location.href = '/login';
           break;
         case 403:
-          toast.error('You don\'t have permission to perform this action');
+          console.error('Forbidden:', data.error);
           break;
         case 404:
-          toast.error('Resource not found');
+          console.error('Not found:', data.error);
           break;
         case 500:
-          toast.error('Server error. Please try again later');
+          console.error('Server error:', data.error);
           break;
         default:
-          toast.error(data.error || 'Something went wrong');
+          console.error('Error:', data.error || 'Something went wrong');
       }
-
-      console.error('API Error:', {
-        status,
-        message: data.error,
-        url: error.config.url,
-      });
     } else if (error.request) {
-      // Request made but no response
-      toast.error('Network error. Please check your connection');
-      console.error('Network error:', error.request);
+      console.error('Network error. Please check your connection');
     } else {
-      // Something else happened
-      toast.error('An unexpected error occurred');
       console.error('Error:', error.message);
     }
 

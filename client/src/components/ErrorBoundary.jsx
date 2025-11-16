@@ -1,6 +1,5 @@
 // client/src/components/ErrorBoundary.jsx - React Error Boundary
 import React from 'react';
-import { logger } from '../utils/logger';
 
 class ErrorBoundary extends React.Component {
   constructor(props) {
@@ -20,12 +19,10 @@ class ErrorBoundary extends React.Component {
     // Log error to console in development
     console.error('ErrorBoundary caught an error:', error, errorInfo);
 
-    // Log to external service (e.g., Sentry)
-    logger.error({
-      error: error.toString(),
-      errorInfo: errorInfo.componentStack,
-      timestamp: new Date().toISOString(),
-    });
+    // In production, you would log to an external service (e.g., Sentry)
+    if (import.meta.env.PROD) {
+      // Example: Sentry.captureException(error);
+    }
 
     this.setState({
       error,

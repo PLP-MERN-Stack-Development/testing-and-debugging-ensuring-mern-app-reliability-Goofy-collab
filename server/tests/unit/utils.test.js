@@ -93,7 +93,7 @@ describe('Utility Functions', () => {
     });
 
     it('should accept custom format', () => {
-      const date = new Date('2024-01-15');
+      const date = new Date('2024-01-15T00:00:00Z');
       const result = formatDate(date, 'YYYY-MM-DD');
       expect(result).toBe('2024-01-15');
     });
@@ -144,7 +144,7 @@ describe('Auth Middleware', () => {
   });
 
   it('should call next() with valid token', () => {
-    const token = jwt.sign({ id: '123' }, process.env.JWT_SECRET || 'test-secret');
+  const token = jwt.sign({ id: '123' }, process.env.JWT_SECRET || 'your-secret-key-change-in-production');
     mockReq.headers.authorization = `Bearer ${token}`;
 
     verifyToken(mockReq, mockRes, mockNext);
